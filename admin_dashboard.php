@@ -69,32 +69,30 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
     </style>
 </head>
 <body>
-
-    <!-- HEADER -->
-    <nav class="navbar navbar-expand-lg navbar-custom mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-chart-line me-2"></i>Panel Administrativo
-            </a>
-            <div class="d-flex align-items-center">
-                <span class="text-white me-3">
-                    <i class="fas fa-user-circle me-2"></i>
-                    <?= htmlspecialchars($username) ?> (<?= htmlspecialchars($rol) ?>)
-                </span>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#cambiarcontra">
-                        <i class="fas fa-key me-1"></i> Cambiar Contraseña
+<nav class="navbar navbar-expand-lg navbar-custom mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-chart-line me-2"></i>Panel Administrativo
+        </a>
+        <div class="d-flex align-items-center">
+            <div class="text-white me-4">
+                <i class="fas fa-user-circle me-2"></i>
+                <span class="me-2"><?= htmlspecialchars($username) ?></span>
+                <span class="badge bg-light text-dark"><?= htmlspecialchars($rol) ?></span>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#cambiarcontra">
+                    <i class="fas fa-key me-1"></i> Cambiar Contraseña
+                </button>
+                <form action="logout.php" method="post">
+                    <button type="submit" class="btn btn-outline-light btn-sm ms-2" name="cerrar_sesion">
+                        <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
                     </button>
-                    <form action="logout.php" method="post">
-                        <button type="submit" class="btn btn-outline-light btn-sm ms-2" name="cerrar_sesion">
-                            <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
-                        </button>
-                    </form>
-                </div>
+                </form>
             </div>
         </div>
-    </nav>
-
+    </div>
+</nav>
     <!-- Mensajes de alerta -->
     <?php if (isset($_SESSION['error'])): ?>
         <div class="alert alert-danger alert-dismissible fade show container mt-3">
