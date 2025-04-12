@@ -782,232 +782,65 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.toggle('bi-eye');
         });
     });
-    
-    // Validación de campos de fecha en tiempo real
-    document.querySelectorAll('input[type="date"], input[type="datetime-local"]').forEach(input => {
-        // Establecer la fecha mínima como hoy
-        const hoy = new Date().toISOString().split('T')[0];
-        if (!input.getAttribute('min')) {
-            input.setAttribute('min', hoy);
-        }
-        
-        // Validar al cambiar
-        input.addEventListener('change', function() {
-            validarFecha(this);
-        });
-        
-        // Validar al perder el foco
-        input.addEventListener('blur', function() {
-            validarFecha(this);
-        });
-    });
-    
-    // Validación de campos de salario en tiempo real
-    document.querySelectorAll('input[type="number"]').forEach(input => {
-        // Validar al cambiar
-        input.addEventListener('input', function() {
-            validarSalario(this);
-        });
-        
-        // Validar al perder el foco
-        input.addEventListener('blur', function() {
-            validarSalario(this);
-        });
-    });
-    
-    // Modal de edición
-    document.querySelectorAll("[data-bs-target='#editModal']").forEach(button => {
-        button.addEventListener("click", () => configurarModalEdicion(button));
-    });
-    
-    // Configurar fecha mínima cuando se abre el modal de asignar proyecto
-    document.getElementById('assignProjectModal').addEventListener('show.bs.modal', function () {
-        const fechaInput = document.getElementById('fecha_asignacion');
-        if (fechaInput) {
-            // Establecer la fecha mínima como el momento actual
-            const ahora = new Date();
-            const año = ahora.getFullYear();
-            const mes = String(ahora.getMonth() + 1).padStart(2, '0');
-            const dia = String(ahora.getDate()).padStart(2, '0');
-            const hora = String(ahora.getHours()).padStart(2, '0');
-            const minutos = String(ahora.getMinutes()).padStart(2, '0');
-            
-            const fechaMinima = `${año}-${mes}-${dia}T${hora}:${minutos}`;
-            fechaInput.min = fechaMinima;
-        }
-    });
-    
-    // Modal de eliminación
-    const deleteModal = document.getElementById('deleteModal');
-    if (deleteModal) {
-        deleteModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;   
-            const empleadoId = button.getAttribute('data-id');
-            const empleadoNombre = button.getAttribute('data-nombre');
-
-            document.getElementById('deleteNombre').textContent = empleadoNombre;
-            document.getElementById('deleteConfirmBtn').href = "eliminar_usuario.php?id=" + empleadoId;
-        });
-    }
-    
-    // Formulario de edición
-    const editForm = document.getElementById('editForm');
-    if (editForm) {
-        editForm.addEventListener('submit', function(e) {
-            const salarioInput = document.getElementById('editSalario');
-            if (!validarSalario(salarioInput)) {
+    const addDepartmentForm = document.getElementById('addDepartmentForm');
+    if (addDepartmentForm) {
+        addDepartmentForm.addEventListener('submit', function(e) {
+            if (!this.checkValidity()) {
                 e.preventDefault();
-                salarioInput.focus();
+                e.stopPropagation();
             }
+            this.classList.add('was-validated');
         });
     }
     
-    // Validación completa del formulario de usuario
-    const userForm = document.getElementById('userForm');
-    if (userForm) {
-        userForm.addEventListener('submit', function(e) {
-            // Prevenir envío por defecto para validar primero
-            e.preventDefault();
-            
-            // Limpiar mensajes de error anteriores
-            document.querySelectorAll('.invalid-feedback').forEach(el => {
-                el.textContent = 'Este campo es obligatorio.';
-            });
-            document.querySelectorAll('.is-invalid').forEach(el => {
-                el.classList.remove('is-invalid');
-            });
-            
-            let isValid = true;
-            
-            // Validar todos los campos requeridos
-            const requiredInputs = this.querySelectorAll('[required]');
-            requiredInputs.forEach(input => {
-                if (!input.value.trim()) {
-                    isValid = false;
-                    input.classList.add('is-invalid');
-                }
-            });
-            
-            // Validaciones específicas
-            const salarioInput = this.querySelector('[name="salario"]');
-            if (salarioInput && salarioInput.value) {
-                if (!validarSalario(salarioInput)) {
-                    isValid = false;
-                }
+    // Validación para el formulario de editar departamento
+    const editDepartmentForm = document.getElementById('editDepartmentForm');
+    if (editDepartmentForm) {
+        editDepartmentForm.addEventListener('submit', function(e) {
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
             }
-            
-            // Validación del nombre de usuario (mínimo 4 caracteres)
-            const usernameInput = this.querySelector('[name="nombreUsuario"]');
-            if (usernameInput && usernameInput.value && usernameInput.value.length < 4) {
-                isValid = false;
-                usernameInput.classList.add('is-invalid');
-                usernameInput.nextElementSibling.textContent = 'El nombre de usuario debe tener al menos 4 caracteres.';
-            }
-            
-            // Validación de la contraseña (mínimo 8 caracteres)
-            const passwordInput = this.querySelector('[name="contrasena"]');
-            if (passwordInput && passwordInput.value && passwordInput.value.length < 8) {
-                isValid = false;
-                passwordInput.classList.add('is-invalid');
-                passwordInput.nextElementSibling.textContent = 'La contraseña debe tener al menos 8 caracteres.';
-            }
-            
-            // Si el formulario es válido, enviarlo
-            if (isValid) {
-                userForm.submit();
-            } else {
-                // Mostrar mensaje general de error en la parte superior del formulario
-                let alertElement = document.querySelector('#userFormAlert');
-                if (!alertElement) {
-                    alertElement = document.createElement('div');
-                    alertElement.id = 'userFormAlert';
-                    alertElement.className = 'alert alert-danger';
-                    alertElement.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Por favor, completa todos los campos requeridos correctamente.';
-                    userForm.prepend(alertElement);
-                }
-                
-                // Hacer scroll al primer campo con error
-                const firstInvalidField = document.querySelector('.is-invalid');
-                if (firstInvalidField) {
-                    firstInvalidField.scrollIntoView({behavior: 'smooth', block: 'center'});
-                    firstInvalidField.focus();
-                }
-            }
+            this.classList.add('was-validated');
         });
-    }
-    
-    // Validación del formulario de asignación de proyectos
-    const assignProjectForm = document.getElementById('assignProjectForm');
-    if (assignProjectForm) {
-        assignProjectForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            let isValid = true;
-            
-            // Validar campos requeridos
-            const requiredInputs = this.querySelectorAll('[required]');
-            requiredInputs.forEach(input => {
-                if (!input.value.trim()) {
-                    input.classList.add('is-invalid');
-                    isValid = false;
+        
+        // Cargar datos del departamento al cambiar la selección
+        const editDepartamentoSelect = document.getElementById('editDepartamentoSelect');
+        if (editDepartamentoSelect) {
+            editDepartamentoSelect.addEventListener('change', function() {
+                const departamentoId = this.value;
+                if (departamentoId) {
+                    // Petición AJAX para obtener datos del departamento
+                    fetch('get_departamento.php?id=' + departamentoId)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('editDepartamentoNombre').value = data.nombre;
+                            } else {
+                                alert('Error: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error al cargar los datos del departamento');
+                        });
                 } else {
-                    input.classList.remove('is-invalid');
+                    document.getElementById('editDepartamentoNombre').value = '';
                 }
             });
-            
-            // Validar salario
-            const salarioInput = document.getElementById('salario');
-            if (salarioInput) {
-                if (!validarSalario(salarioInput)) {
-                    isValid = false;
-                }
-            }
-            
-            // Validar fecha
-            const fechaInput = document.getElementById('fecha_asignacion');
-            if (fechaInput) {
-                if (!validarFecha(fechaInput)) {
-                    isValid = false;
-                }
-            }
-            
-            if (isValid) {
-                assignProjectForm.submit();
-            } else {
-                // Hacer scroll al primer campo con error
-                const firstInvalidField = document.querySelector('.is-invalid');
-                if (firstInvalidField) {
-                    firstInvalidField.scrollIntoView({behavior: 'smooth', block: 'center'});
-                    firstInvalidField.focus();
-                }
-            }
-        });
+        }
     }
     
-    // Validación del formulario de cambio de contraseña
-    const passwordForm = document.getElementById('changePasswordForm');
-    if (passwordForm) {
-        passwordForm.addEventListener('submit', function(e) {
-            const nueva = document.getElementById('nueva_contrasena');
-            const confirmar = document.getElementById('confirmar_contrasena');
-            
-            if (nueva.value !== confirmar.value) {
-                e.preventDefault();
-                confirmar.setCustomValidity("Las contraseñas no coinciden");
-                confirmar.classList.add('is-invalid');
-                confirmar.nextElementSibling.querySelector('.invalid-feedback').textContent = 'Las contraseñas no coinciden.';
-            } else {
-                confirmar.setCustomValidity("");
-            }
-        });
-    }
-    
-    // Resto de validaciones para los otros formularios
-    ['projectForm', 'deleteProjectForm'].forEach(formId => {
-        const form = document.getElementById(formId);
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                if (!validateForm(this)) {
-                    e.preventDefault();
+    // Limpiar formularios al cerrar modales
+    const departmentModals = ['#addDepartment', '#editDepartmentModal', '#deleteDepartmentModal'];
+    departmentModals.forEach(modalId => {
+        const modal = document.querySelector(modalId);
+        if (modal) {
+            modal.addEventListener('hidden.bs.modal', function() {
+                const form = this.querySelector('form');
+                if (form) {
+                    form.reset();
+                    form.classList.remove('was-validated');
                 }
             });
         }
@@ -1064,6 +897,30 @@ function resetForm(formElement) {
         }
     }
 }
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteDepartmentForm = document.getElementById('deleteDepartmentForm');
+    if (deleteDepartmentForm) {
+        deleteDepartmentForm.addEventListener('submit', function(e) {
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.add('was-validated');
+            }
+        });
+    }
+    
+    // Limpiar formulario al cerrar el modal
+    const deleteDepartmentModal = document.getElementById('deleteDepartmentModal');
+    if (deleteDepartmentModal) {
+        deleteDepartmentModal.addEventListener('hidden.bs.modal', function() {
+            const form = this.querySelector('form');
+            if (form) {
+                form.reset();
+                form.classList.remove('was-validated');
+            }
+        });
+    }
+});
 
 // Limpiar todos los modales al cerrarse
 document.addEventListener('DOMContentLoaded', function() {
@@ -1117,6 +974,136 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<<!-- Modal Agregar Departamento -->
+<div class="modal fade" id="addDepartment" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-building me-2"></i>Agregar Departamento
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="agregar_departamento.php" method="post" id="addDepartmentForm">
+                    <div class="mb-3">
+                        <label for="nombre_departamento" class="form-label">Nombre del Departamento</label>
+                        <input type="text" class="form-control" id="nombre_departamento" name="nombre" required>
+                        <div class="invalid-feedback">
+                            Por favor ingrese un nombre para el departamento.
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer px-0 pb-0">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i>Guardar Departamento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Modal Editar Departamento -->
+<div class="modal fade" id="editDepartmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit me-2"></i>Editar Departamento
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="editar_departamento.php" method="post" id="editDepartmentForm">
+                    <div class="mb-3">
+                        <label for="editDepartamentoSelect" class="form-label">Seleccione el Departamento</label>
+                        <select class="form-select" id="editDepartamentoSelect" name="departamento_id" required>
+                            <option value="">-- Seleccione un departamento --</option>
+                            <?php foreach ($departamentos as $departamento): ?>
+                                <option value="<?= htmlspecialchars($departamento['id']) ?>">
+                                    <?= htmlspecialchars($departamento['nombre']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="invalid-feedback">
+                            Por favor seleccione un departamento.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editDepartamentoNombre" class="form-label">Nuevo Nombre</label>
+                        <input type="text" class="form-control" id="editDepartamentoNombre" name="nuevo_nombre" required>
+                        <div class="invalid-feedback">
+                            Por favor ingrese un nombre para el departamento.
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer px-0 pb-0">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save me-1"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Eliminar Departamento -->
+<div class="modal fade" id="deleteDepartmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-trash me-2"></i>Eliminar Departamento
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="deleteDepartmentForm" action="eliminar_departamento.php" method="POST">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Advertencia:</strong> Esta acción no se puede deshacer. Al eliminar un departamento, asegúrese de que no tenga empleados asignados.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="departamentoSelect" class="form-label">Seleccione el Departamento a Eliminar</label>
+                        <select class="form-select" id="departamentoSelect" name="departamento_id" required>
+                            <option value="">-- Seleccione un departamento --</option>
+                            <?php foreach ($departamentos as $departamento): ?>
+                                <option value="<?= htmlspecialchars($departamento['id']) ?>">
+                                    <?= htmlspecialchars($departamento['nombre']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="invalid-feedback">
+                            Por favor seleccione un departamento.
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="confirmDelete" name="confirmar" value="1" required>
+                        <label class="form-check-label" for="confirmDelete">
+                            Confirmo que deseo eliminar este departamento
+                        </label>
+                        <div class="invalid-feedback">
+                            Debe confirmar esta acción.
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i>Eliminar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
