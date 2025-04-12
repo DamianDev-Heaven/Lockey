@@ -83,22 +83,24 @@ $total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos'));
             <a class="navbar-brand" href="admin_dashboard.php">
                 <i class="fas fa-chart-line me-2"></i>Panel Administrativo
             </a>
-            <div class="d-flex align-items-center">
-                <span class="text-white me-3">
-                    <i class="fas fa-user-circle me-2"></i>
-                    <?= htmlspecialchars($username) ?> (<?= htmlspecialchars($rol) ?>)
-                </span>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#cambiarcontra">
-                        <i class="fas fa-key me-1"></i> Cambiar Contraseña
-                    </button>
-                    <form action="logout.php" method="post">
-                        <button type="submit" class="btn btn-outline-light btn-sm ms-2" name="cerrar_sesion">
-                            <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
-                        </button>
-                    </form>
-                </div>
-            </div>
+            <!-- Reemplazar el span existente en línea 75-78 -->
+<div class="d-flex align-items-center">
+    <div class="text-white me-4">
+        <i class="fas fa-user-circle me-2"></i>
+        <span class="me-2"><?= htmlspecialchars($username) ?></span>
+        <span class="badge bg-light text-dark"><?= htmlspecialchars($rol) ?></span>
+    </div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#cambiarcontra">
+            <i class="fas fa-key me-1"></i> Cambiar Contraseña
+        </button>
+        <form action="logout.php" method="post">
+            <button type="submit" class="btn btn-outline-light btn-sm ms-2" name="cerrar_sesion">
+                <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
+            </button>
+        </form>
+    </div>
+</div>
         </div>
     </nav>
 
