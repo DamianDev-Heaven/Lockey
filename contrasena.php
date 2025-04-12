@@ -1,6 +1,7 @@
 <?php
-include('conexion.php');
+include('config/conexion.php');
 session_start();
+
 $rol = $_SESSION['rol'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cambiar_contrasena'])) {
