@@ -26,7 +26,7 @@
         $stmt->execute();
         $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
-        
+
     } catch (PDOException $e) {
         $error = "Error al obtener datos: " . $e->getMessage();
     }
@@ -66,79 +66,93 @@
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#cambiarcontra">
-                        <i class="fas fa-key me-1"></i> Contraseña
+                        <i class="fas fa-key me-1"></i> Cambiar Contraseña
                     </button>
-                    <form action="logout.php" method="post">
+                    <form action="logout.php" method="post" onsubmit="return confirmarCerrarSesion();">
                         <button type="submit" class="btn btn-outline-light btn-sm ms-2" name="cerrar_sesion">
-                            <i class="fas fa-sign-out-alt me-1"></i> Salir
+                            <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
                         </button>
                     </form>
                 </div>
             </div>
         </div>
     </nav>
+    <script>
+        function confirmarCerrarSesion() {
+            return confirm("¿Estás seguro de que deseas cerrar sesión?");
+        }
+    </script>
 
-    <!-- Contenido principal -->
-    <div class="container table-container">
-        <h2 class="text-center mb-4 text-primary">
-            <i class="fas fa-user-circle me-2"></i>Mis Proyectos Asignados
-        </h2>
-        
-        <?php if (isset($error)): ?>
-            <div class="alert alert-danger"><?= $error ?></div>
-        <?php elseif (empty($usuarios)): ?>
-            <div class="alert alert-info">No tienes proyectos asignados actualmente.</div>
-        <?php else: ?>
-            <div class="table-responsive">
-                <table class="table table-custom table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th class="text-center">#</th>
-                            <th>Nombre</th>
-                            <th class="text-end">Salario</th>
-                            <th>Proyecto</th>
-                            <th>Departamento</th>
-                            <th class="text-center">Fecha Asignación</th>
-                            <th class="text-center">Estado</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $numero = 1; ?>
-                        <?php foreach ($usuarios as $row): ?>
-                        <tr>
-                            <td class="text-center"><?= $numero++ ?></td>
-                            <td><?= htmlspecialchars($row['nombre']) ?></td>
-                            <td class="text-end fw-medium">$<?= number_format($row['salario'], 2) ?></td>
-                            <td><?= htmlspecialchars($row['proyecto']) ?></td>
-                            <td><?= htmlspecialchars($row['departamento']) ?></td>
-                            <td class="text-center"><?= date('d/m/Y', strtotime($row['fecha_asignada'])) ?></td>
-                            <td class="text-center <?= $row['Estado'] === 'Activo' ? 'status-active' : 'status-inactive' ?>">
-                                <?= htmlspecialchars($row['Estado']) ?>
-                            </td>
-                            <td class="text-center">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <button class="btn btn-success btn-action finalizar-btn"
-                                            data-id-proyecto="<?= $row['proyecto_id'] ?>"
-                                            data-id-empleado="<?= $row['id'] ?>"
-                                            data-proyecto="<?= htmlspecialchars($row['proyecto']) ?>">
-                                        <i class="fas fa-check-circle me-1"></i>Finalizar
-                                    </button>
-                                    <button class="btn btn-danger btn-action eliminar-btn"
-                                            data-id-proyecto="<?= $row['proyecto_id'] ?>"
-                                            data-id-empleado="<?= $row['id'] ?>"
-                                            data-proyecto="<?= htmlspecialchars($row['proyecto']) ?>">
-                                        <i class="fas fa-trash-alt me-1"></i>Eliminar
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
-    </div>
+<!-- Contenido principal -->
+<div class="container table-container">
+    <h2 class="text-center mb-4 text-primary">
+        <i class="fas fa-user-circle me-2"></i>Mis Proyectos Asignados
+    </h2>
+
+    <?php if (isset($error)): ?>
+        <div class="alert alert-danger"><?= $error ?></div>
+    <?php elseif (!is_array($usuarios) || count($usuarios) === 0): ?>
+        <!-- Mensaje cuando no hay proyectos -->
+        <div class="text-center text-muted my-5">
+            <i class="fas fa-folder-open fa-3x d-block mb-3"></i>
+            <h4>Sin proyectos asignados</h4>
+            <p>Actualmente no tienes ningún proyecto asignado.</p>
+        </div>
+    <?php else: ?>
+        <!-- Tabla de proyectos cuando sí hay datos -->
+        <div class="table-responsive">
+            <table class="table table-custom table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>Nombre</th>
+                        <th class="text-end">Salario</th>
+                        <th>Proyecto</th>
+                        <th>Departamento</th>
+                        <th class="text-center">Fecha Asignación</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $numero = 1; ?>
+                    <?php foreach ($usuarios as $row): ?>
+                    <tr>
+                        <td class="text-center"><?= $numero++ ?></td>
+                        <td><?= htmlspecialchars($row['nombre']) ?></td>
+                        <td class="text-end fw-medium">$<?= number_format($row['salario'], 2) ?></td>
+                        <td><?= htmlspecialchars($row['proyecto']) ?></td>
+                        <td><?= htmlspecialchars($row['departamento']) ?></td>
+                        <td class="text-center"><?= date('d/m/Y', strtotime($row['fecha_asignada'])) ?></td>
+                        <td class="text-center <?= $row['Estado'] === 'Activo' ? 'status-active' : 'status-inactive' ?>">
+                            <?= htmlspecialchars($row['Estado']) ?>
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <button class="btn btn-success btn-action finalizar-btn"
+                                        data-id-proyecto="<?= $row['proyecto_id'] ?>"
+                                        data-id-empleado="<?= $row['id'] ?>"
+                                        data-proyecto="<?= htmlspecialchars($row['proyecto']) ?>">
+                                    <i class="fas fa-check-circle me-1"></i>Finalizar
+                                </button>
+                                <button class="btn btn-danger btn-action eliminar-btn"
+                                        data-id-proyecto="<?= $row['proyecto_id'] ?>"
+                                        data-id-empleado="<?= $row['id'] ?>"
+                                        data-proyecto="<?= htmlspecialchars($row['proyecto']) ?>">
+                                    <i class="fas fa-trash-alt me-1"></i>Eliminar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+</div>
+
+
+
 
     <!-- Modal Cambiar Contraseña -->
     <div class="modal fade" id="cambiarcontra" tabindex="-1" aria-hidden="true">
