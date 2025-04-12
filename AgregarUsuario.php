@@ -1,7 +1,50 @@
 <?php
-include('conexion.php');
+session_start();
+include('config/conexion.php'); // Corregido el separador de directorios
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Validar campos requeridos
+    $campos_requeridos = [
+        'nombre' => 'Nombre completo',
+        'salario' => 'Salario',
+        'departamento_id' => 'Departamento',
+        'nombreUsuario' => 'Nombre de usuario',
+        'contrasena' => 'Contraseña',
+        'Roles_id' => 'Rol'
+    ];
+    
+    $errores = [];
+    
+    // Verificar campos vacíos
+    foreach ($campos_requeridos as $campo => $etiqueta) {
+        if (empty($_POST[$campo])) {
+            $errores[] = "El campo {$etiqueta} es obligatorio.";
+        }
+    }
+    
+    // Validación específica del salario
+    if (isset($_POST['salario']) && (!is_numeric($_POST['salario']) || $_POST['salario'] < 0 || $_POST['salario'] === '-0')) {
+        $errores[] = "El salario debe ser un número positivo.";
+    }
+    
+    // Validación de nombre de usuario (al menos 4 caracteres)
+    if (isset($_POST['nombreUsuario']) && strlen($_POST['nombreUsuario']) < 4) {
+        $errores[] = "El nombre de usuario debe tener al menos 4 caracteres.";
+    }
+    
+    // Validación de contraseña (al menos 6 caracteres)
+    if (isset($_POST['contrasena']) && strlen($_POST['contrasena']) < 6) {
+        $errores[] = "La contraseña debe tener al menos 6 caracteres.";
+    }
+    
+    // Si hay errores, mostrar mensajes y regresar
+    if (!empty($errores)) {
+        $_SESSION['errores'] = $errores;
+        header("Location: admin_dashboard.php");
+        exit();
+    }
+    
+    // Si todo está validado, proceder con el registro
     $nombre = $_POST['nombre'];
     $salario = $_POST['salario'];
     $proyecto_id = !empty($_POST['proyecto_id']) ? $_POST['proyecto_id'] : null;
@@ -35,24 +78,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         // Ejecutar la consulta
         if ($stmt->execute()) {
-            echo "<script>
-                    alert('Usuario agregado correctamente');
-                    window.location.href='admin_dashboard.php';
-                  </script>";
+            $_SESSION['mensaje'] = "Usuario agregado correctamente";
+            header("Location: admin_dashboard.php");
             exit();
         } else {
-            echo "<script>
-                    alert('Error al agregar usuario');
-                    window.history.back();
-                  </script>";
+            $_SESSION['error'] = "Error al agregar usuario";
+            header("Location: admin_dashboard.php");
             exit();
         }
     } catch (PDOException $e) {
-        echo "<script>
-                alert('Error: " . addslashes($e->getMessage()) . "');
-                window.history.back();
-              </script>";
+        $_SESSION['error'] = "Error: " . $e->getMessage();
+        header("Location: admin_dashboard.php");
         exit();
     }
+}
+// Si se intenta acceder directamente sin POST
+else {
+    $_SESSION['error'] = "Acceso inválido";
+    header("Location: admin_dashboard.php");
+    exit();
 }
 ?>

@@ -152,7 +152,7 @@ $total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos'));
     <!-- menú -->
     <nav class="navbar navbar-expand-lg navbar-custom mb-4">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="admin_dashboard.php">
                 <i class="fas fa-chart-line me-2"></i>Panel Administrativo
             </a>
             <div class="d-flex align-items-center">

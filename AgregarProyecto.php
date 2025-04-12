@@ -1,5 +1,5 @@
 <?php
-include('conexion.php'); // Incluye la conexión a la base de datos
+include('config\conexion.php'); // Incluye la conexión a la base de datos
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nombre_proyecto = $_POST['proyecto'];  // Nombre del proyecto

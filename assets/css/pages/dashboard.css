@@ -68,20 +68,39 @@
   }
   .navbar-custom {
     background-color: #0d6efd !important; /* Color azul de Bootstrap */
-    color: white !important;
+    color: rgb(255, 255, 255) !important;
   }
   
   .navbar-custom .navbar-brand {
-    color: white !important;
+    color: rgb(255, 255, 255) !important;
   }
   
   .navbar-custom .text-white {
-    color: white !important;
+    color: rgb(255, 255, 255) !important;
   }
   
   .navbar-custom .btn-outline-light {
-    color: white !important;
+    color: rgb(255, 255, 255) !important;
     border-color: white !important;
+  }
+  .navbar-custom .navbar-brand:hover {
+    color: #000000 !important;
+  }
+    
+  .navbar-custom .nav-link:hover {
+    color: #000000 !important;
+  }
+  
+  .navbar-custom .btn-outline-light:hover {
+    color: #000000 !important;
+    background-color: rgb(255, 255, 255);
+    border-color: white !important;
+  }
+  
+  /* Asegurar que los iconos también cambien a negro */
+  .navbar-custom:hover .text-white i:hover,
+  .navbar-custom .navbar-brand i:hover {
+    color: #000000 !important;
   }
 
   .badge {
