@@ -208,7 +208,7 @@
                         <div class="mb-4">
                             <label class="form-label fw-medium">Confirmar Nueva Contraseña</label>
                             <div class="input-group">
-                                <input type="password" name="confirmar_contrasena" class="form-control" required>
+                                <input type="password" name="confirmar_contrasena" class="form-control" required minlength="8">
                                 <span class="input-group-text password-toggle">
                                     <i class="fas fa-eye"></i>
                                 </span>

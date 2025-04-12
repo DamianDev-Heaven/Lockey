@@ -611,93 +611,52 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="cambiarcontra" tabindex="-1" aria-hidden="true">
+     <!-- Modal Cambiar Contraseña -->
+     <div class="modal fade" id="cambiarcontra" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <!-- Encabezado del modal -->
-                <div class="modal-header bg-gradient-primary text-white">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-shield-lock fs-4 me-2"></i>
-                        <h5 class="modal-title mb-0">Cambiar Contraseña</h5>
-                    </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content border-0">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title">
+                        <i class="fas fa-key me-2"></i>Cambiar Contraseña
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                
-                <!-- Cuerpo del modal -->
                 <div class="modal-body p-4">
-                    <form action="contrasena.php" method="POST" class="needs-validation" id="changePasswordForm" novalidate>
-                        <!-- Contraseña actual -->
-                        <div class="mb-4">
-                            <label for="contrasena_actual" class="form-label fw-semibold">
-                                <i class="bi bi-key-fill me-2 text-primary"></i>Contraseña Actual
-                            </label>
+                    <form id="passwordForm" action="contrasena.php" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Contraseña Actual</label>
                             <div class="input-group">
-                                <input type="password" 
-                                       class="form-control py-2" 
-                                       id="contrasena_actual" 
-                                       name="contrasena_actual" 
-                                       required
-                                       placeholder="Ingresa tu contraseña actual">
-                                <span class="input-group-text bg-white">
-                                    <i class="bi bi-eye-slash toggle-password" style="cursor: pointer;"></i>
+                                <input type="password" name="contrasena_actual" class="form-control" required>
+                                <span class="input-group-text password-toggle">
+                                    <i class="fas fa-eye"></i>
                                 </span>
-                                <div class="invalid-feedback">
-                                    Por favor ingresa tu contraseña actual.
-                                </div>
                             </div>
                         </div>
                         
-                        <!-- Nueva contraseña -->
-                        <div class="mb-4">
-                            <label for="nueva_contrasena" class="form-label fw-semibold">
-                                <i class="bi bi-key me-2 text-primary"></i>Nueva Contraseña
-                            </label>
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Nueva Contraseña</label>
                             <div class="input-group">
-                                <input type="password" 
-                                       class="form-control py-2" 
-                                       id="nueva_contrasena" 
-                                       name="nueva_contrasena" 
-                                       required
-                                       minlength="8"
-                                       placeholder="Mínimo 8 caracteres">
-                                <span class="input-group-text bg-white">
-                                    <i class="bi bi-eye-slash toggle-password" style="cursor: pointer;"></i>
+                                <input type="password" name="nueva_contrasena" class="form-control" required minlength="8">
+                                <span class="input-group-text password-toggle">
+                                    <i class="fas fa-eye"></i>
                                 </span>
-                                <div class="invalid-feedback">
-                                    La contraseña debe tener al menos 8 caracteres.
-                                </div>
                             </div>
-                            <small class="text-muted">Incluye mayúsculas, números y caracteres especiales para mayor seguridad.</small>
+                            <small class="text-muted">Mínimo 8 caracteres</small>
                         </div>
                         
-                        <!-- Confirmar nueva contraseña -->
                         <div class="mb-4">
-                            <label for="confirmar_contrasena" class="form-label fw-semibold">
-                                <i class="bi bi-key me-2 text-primary"></i>Confirmar Nueva Contraseña
-                            </label>
+                            <label class="form-label fw-medium">Confirmar Nueva Contraseña</label>
                             <div class="input-group">
-                                <input type="password" 
-                                       class="form-control py-2" 
-                                       id="confirmar_contrasena" 
-                                       name="confirmar_contrasena" 
-                                       required
-                                       placeholder="Repite tu nueva contraseña">
-                                <span class="input-group-text bg-white">
-                                    <i class="bi bi-eye-slash toggle-password" style="cursor: pointer;"></i>
+                                <input type="password" name="confirmar_contrasena" class="form-control" required minlength="8">
+                                <span class="input-group-text password-toggle">
+                                    <i class="fas fa-eye"></i>
                                 </span>
-                                <div class="invalid-feedback">
-                                    Las contraseñas deben coincidir.
-                                </div>
                             </div>
                         </div>
                         
-                        <!-- Botón de enviar -->
-                        <div class="d-grid mt-4">
-                            <button type="submit" 
-                                   name="cambiar_contrasena" 
-                                   class="btn btn-primary btn-lg py-2 fw-semibold">
-                                <i class="bi bi-check-circle me-2"></i>Actualizar Contraseña
+                        <div class="d-grid">
+                            <button type="submit" name="cambiar_contrasena" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
                             </button>
                         </div>
                     </form>
@@ -705,7 +664,6 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
             </div>
         </div>
     </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // Utilidades comunes

@@ -309,12 +309,13 @@ $total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos'));
                         
                         <div class="mb-3">
                             <label for="nueva_contrasena" class="form-label">Nueva Contraseña</label>
-                            <input type="password" class="form-control" id="nueva_contrasena" name="nueva_contrasena" required>
+                            <input type="password" class="form-control" id="nueva_contrasena" name="nueva_contrasena" required minlength="8">
+                            <small class="text-muted">Mínimo 8 caracteres</small>
                         </div>
                         
                         <div class="mb-3">
                             <label for="confirmar_contrasena" class="form-label">Confirmar Nueva Contraseña</label>
-                            <input type="password" class="form-control" id="confirmar_contrasena" name="confirmar_contrasena" required>
+                            <input type="password" class="form-control" id="confirmar_contrasena" name="confirmar_contrasena" required minlength="8">
                         </div>
                         
                         <div class="d-grid">
