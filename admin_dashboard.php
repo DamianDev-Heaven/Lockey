@@ -851,6 +851,76 @@ function configurarModalEdicion(button) {
 function redirectTo() {
     window.location.href = 'info_general.php';
 }
+
+function resetForm(formElement) {
+    if (formElement) {
+        // Resetear el formulario a sus valores iniciales
+        formElement.reset();
+        
+        // Eliminar todas las clases de validación
+        formElement.querySelectorAll('.is-invalid').forEach(el => {
+            el.classList.remove('is-invalid');
+        });
+        
+        // Eliminar mensajes de alerta
+        const alertElement = formElement.querySelector('.alert');
+        if (alertElement) {
+            alertElement.remove();
+        }
+    }
+}
+
+// Limpiar todos los modales al cerrarse
+document.addEventListener('DOMContentLoaded', function() {
+    // Modales con formularios
+    const modalIds = ['#adduser', '#addproyect', '#deleteProjectModal', '#editModal', 
+                      '#assignProjectModal', '#cambiarcontra', '#deleteModal'];
+    
+    modalIds.forEach(modalId => {
+        const modalElement = document.querySelector(modalId);
+        if (modalElement) {
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                // Para el modal de eliminación (no tiene form pero tiene otros elementos)
+                if (modalId === '#deleteModal') {
+                    const nombreElement = document.getElementById('deleteNombre');
+                    if (nombreElement) nombreElement.textContent = '';
+                    return;
+                }
+                
+                // Para los demás modales que contienen formularios
+                const formElement = this.querySelector('form');
+                resetForm(formElement);
+                
+                // Limpiar mensajes de error específicos
+                if (modalId === '#adduser') {
+                    const userFormAlert = document.getElementById('userFormAlert');
+                    if (userFormAlert) userFormAlert.remove();
+                }
+            });
+        }
+    });
+    
+    // Configuración especial para el modal de cambio de contraseña
+    const passwordModal = document.querySelector('#cambiarcontra');
+    if (passwordModal) {
+        passwordModal.addEventListener('hidden.bs.modal', function() {
+            // Restaurar los iconos de mostrar/ocultar contraseña
+            this.querySelectorAll('.toggle-password').forEach(icon => {
+                if (!icon.classList.contains('bi-eye-slash')) {
+                    icon.classList.add('bi-eye-slash');
+                    icon.classList.remove('bi-eye');
+                }
+            });
+            
+            // Restaurar los campos a tipo password
+            this.querySelectorAll('input[type="text"]').forEach(input => {
+                if (input.id.includes('contrasena')) {
+                    input.type = 'password';
+                }
+            });
+        });
+    }
+});
 </script>
 
 </body>
