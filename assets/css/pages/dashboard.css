@@ -1,0 +1,267 @@
+/* ===== ADMIN DASHBOARD STYLES ===== */
+/* Estilos específicos para el panel administrativo */
+
+/* Variables */
+:root {
+    /* Colores principales */
+    --admin-primary: #1e90ff;
+    --admin-secondary: #00bfff;
+    --admin-success: #2ecc71;
+    --admin-danger: #e74c3c;
+    --admin-warning: #f39c12;
+    --admin-info: #3498db;
+    
+    /* Tonos neutros */
+    --admin-light: #f0f8ff;
+    --admin-dark: #2c3e50;
+    --admin-white: #ffffff;
+    --admin-gray: #f8f9fa;
+    --admin-gray-dark: #6c757d;
+    
+    /* Efectos */
+    --admin-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --admin-shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+    --admin-transition: all 0.3s ease;
+  }
+  
+  /* Estilos base */
+  .admin-page {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--admin-gray);
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  /* Navbar administrativo */
+  .admin-navbar {
+    background-color: var(--admin-primary);
+    box-shadow: var(--admin-shadow);
+    padding: 0.75rem 1rem;
+  }
+  
+  .admin-navbar .navbar-brand {
+    color: var(--admin-white);
+    font-weight: 600;
+  }
+  
+  .admin-navbar .nav-user {
+    color: var(--admin-white);
+    display: flex;
+    align-items: center;
+  }
+  
+  .admin-navbar .btn-outline-light {
+    border: 1px solid var(--admin-white);
+    color: var(--admin-white);
+    transition: var(--admin-transition);
+  }
+  
+  .admin-navbar .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Contenedor principal */
+  .admin-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .navbar-custom {
+    background-color: #0d6efd !important; /* Color azul de Bootstrap */
+    color: white !important;
+  }
+  
+  .navbar-custom .navbar-brand {
+    color: white !important;
+  }
+  
+  .navbar-custom .text-white {
+    color: white !important;
+  }
+  
+  .navbar-custom .btn-outline-light {
+    color: white !important;
+    border-color: white !important;
+  }
+
+  .badge {
+    padding: 0.35em 0.65em;
+    font-weight: 500;
+}
+  
+  /* Tarjetas de bienvenida */
+  .admin-welcome-card {
+    background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+    color: var(--admin-white);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--admin-shadow);
+  }
+  
+  /* Contenedor de métricas */
+  .admin-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .admin-metric-card {
+    background: var(--admin-white);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: var(--admin-shadow);
+    transition: var(--admin-transition);
+    border-left: 5px solid var(--admin-primary);
+  }
+  
+  .admin-metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--admin-shadow-lg);
+  }
+  
+  /* Tarjetas de acción */
+  .admin-action-card {
+    cursor: pointer;
+    transition: var(--admin-transition);
+    background: var(--admin-white);
+    border-radius: 15px;
+    border: none;
+    box-shadow: var(--admin-shadow);
+    height: 100%;
+  }
+  
+  .admin-action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--admin-shadow-lg);
+  }
+  
+  /* Iconos con fondos */
+  .admin-icon-bg {
+    padding: 1rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .admin-icon-primary {
+    background-color: rgba(30, 144, 255, 0.1);
+    color: var(--admin-primary);
+  }
+  
+  .admin-icon-info {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: var(--admin-info);
+  }
+  
+  .admin-icon-success {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: var(--admin-success);
+  }
+  
+  /* Títulos de sección */
+  .admin-section-title {
+    color: var(--admin-primary);
+    border-bottom: 2px solid var(--admin-secondary);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Tablas administrativas */
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .admin-table th {
+    background-color: var(--admin-primary);
+    color: var(--admin-white);
+    padding: 12px;
+    font-weight: 500;
+    text-align: left;
+  }
+  
+  .admin-table tr:nth-child(even) {
+    background-color: var(--admin-light);
+  }
+  
+  .admin-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .admin-table-hover tr:hover {
+    background-color: rgba(30, 144, 255, 0.05);
+  }
+  
+  /* Modales administrativos */
+  .admin-modal .modal-header {
+    border-bottom: 0;
+  }
+  
+  .admin-modal-primary .modal-header {
+    background: var(--admin-primary);
+    color: var(--admin-white);
+  }
+  
+  .admin-modal-info .modal-header {
+    background: var(--admin-info);
+    color: var(--admin-white);
+  }
+  
+  .admin-modal-danger .modal-header {
+    background: var(--admin-danger);
+    color: var(--admin-white);
+  }
+  
+  .admin-modal .modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: var(--admin-shadow-lg);
+    overflow: hidden;
+  }
+  
+  .admin-modal .btn-close-white {
+    filter: brightness(0) invert(1);
+  }
+  
+  /* Botón flotante */
+  .admin-floating-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--admin-primary);
+    color: var(--admin-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--admin-shadow-lg);
+    z-index: 1000;
+    transition: var(--admin-transition);
+    border: none;
+  }
+  
+  .admin-floating-btn:hover {
+    transform: translateY(-5px);
+    background-color: var(--admin-secondary);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .admin-container {
+      padding: 1rem;
+    }
+    
+    .admin-welcome-card {
+      padding: 1.5rem;
+    }
+    
+    .admin-metrics {
+      grid-template-columns: 1fr;
+    }
+  }

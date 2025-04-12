@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('conexion.php'); // Incluir archivo de conexión
+include('config\conexion.php');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];

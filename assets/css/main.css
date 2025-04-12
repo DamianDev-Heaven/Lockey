@@ -1,0 +1,7 @@
+/* Importar estilos base */
+@import url('variables.css');
+@import url('reset.css');
+
+/* Importar componentes */
+@import url('buttons.css');
+@import url('forms.css');

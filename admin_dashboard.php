@@ -25,7 +25,7 @@ if ($rol  === 'usuario' ) {
     
 
 // Conectar a la base de datos
-include('conexion.php');
+include('config\conexion.php');
 
 //llena un select con informacion de la base de datos para proyectos
 $sqlProyectos = "SELECT id, nombre FROM proyectos";
@@ -59,90 +59,11 @@ $empleado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil del Usuario</title>
+    <title>Panel Administrativo</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        :root {
-            --primary-color: #1e90ff;
-            --secondary-color: #00bfff;
-            --light-color: #f0f8ff;
-            --dark-color: #007bff;
-            --white: #ffffff;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .navbar-custom {
-            background-color: var(--dark-color);
-            box-shadow: var(--shadow);
-        }
-        
-                
-        .table-hover tbody tr:hover {
-                background-color: rgba(13, 110, 253, 0.05);
-            }
-            
-            .avatar-sm {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 0.875rem;
-            }
-            
-            .badge {
-                padding: 0.35em 0.65em;
-                font-weight: 500;
-            }
-            
-            .card {
-                border-radius: 0.75rem;
-                border: 1px solid rgba(0, 0, 0, 0.08);
-            }
-        .bg-gradient-primary {
-                background: linear-gradient(135deg, #3b82f6, #2563eb);
-            }
-            
-            .modal-content {
-                border-radius: 0.75rem;
-                overflow: hidden;
-            }
-            
-            .form-control {
-                border-left: 0;
-                border-right: 0;
-                border-top: 0;
-                border-radius: 0;
-                border-bottom: 2px solid #dee2e6;
-                padding-left: 0;
-            }
-            
-            .form-control:focus {
-                box-shadow: none;
-                border-color: #3b82f6;
-            }
-            
-            .input-group-text {
-                border-left: 0;
-                border-right: 0;
-                border-top: 0;
-                border-bottom: 2px solid #dee2e6;
-                border-radius: 0;
-                background-color: transparent;
-            }
-            
-            .btn-lg {
-                border-radius: 0.5rem;
-            }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/pages/dashboard.css">
 </head>
 <body>
 
@@ -433,7 +354,7 @@ $empleado = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <select name="proyecto_id" id="proyectoSelect" class="form-control" required>
                             <option value="">Seleccione un proyecto</option>
                             <?php
-                            include('conexion.php');
+                            include('config/conexion.php');
                             $stmt = $pdo->query("SELECT id, nombre FROM proyectos");
                             while ($proyecto = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                 echo "<option value='{$proyecto['id']}'>{$proyecto['nombre']}</option>";
@@ -470,7 +391,7 @@ $empleado = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <select name="proyecto_id" id="editProyecto" class="form-control" required>
                         <option value="">Seleccione un Proyecto</option>
                         <?php
-                        include('conexion.php');
+                        include('config/conexion.php');
                         $stmt = $pdo->query("SELECT id, nombre FROM proyectos");
                         while ($proyecto = $stmt->fetch(PDO::FETCH_ASSOC)) {
                             echo "<option value='{$proyecto['id']}'>{$proyecto['nombre']}</option>";
@@ -732,26 +653,33 @@ $empleado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-      // Seleccionamos todos los botones de "Modificar"
-      const editButtons = document.querySelectorAll("[data-bs-target='#editModal']");
+    // Seleccionamos todos los botones de "Modificar"
+    const editButtons = document.querySelectorAll("[data-bs-target='#editModal']");
 
-      editButtons.forEach(button => {
-          button.addEventListener("click", function () {
-              // Obtener datos del botón presionado
-              const id = this.getAttribute("data-id");
-              const nombre = this.getAttribute("data-nombre");
-              const salario = this.getAttribute("data-salario");
-              const proyecto = this.getAttribute("data-proyecto");
-              
-
-              // Llenar los campos del modal
-              document.getElementById("editId").value = id;
-              document.getElementById("editNombre").value = nombre;
-              document.getElementById("editSalario").value = salario;
-              document.getElementById("editProyecto").value = proyecto;
-          });
-      });
-  });
+    editButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            // Obtener datos del botón presionado
+            const id = this.getAttribute("data-id");
+            const salario = this.getAttribute("data-salario");
+            const proyecto = this.getAttribute("data-proyecto");
+            
+            // Llenar los campos del modal
+            document.getElementById("editId").value = id;
+            // Quitar esta línea ya que no existe editNombre
+            // document.getElementById("editNombre").value = nombre;
+            document.getElementById("editSalario").value = salario;
+            
+            // Seleccionar el proyecto en el dropdown
+            const selectProyecto = document.getElementById("editProyecto");
+            for (let i = 0; i < selectProyecto.options.length; i++) {
+                if (selectProyecto.options[i].textContent.trim() === proyecto) {
+                    selectProyecto.selectedIndex = i;
+                    break;
+                }
+            }
+        });
+    });
+});
 </script>
 
 <script>

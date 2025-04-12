@@ -1,0 +1,70 @@
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-md);
+    min-height: 100vh;
+}
+
+.login-container {
+    background-color: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 400px;
+    padding: var(--spacing-xl);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.login-container:hover {
+    transform: translateY(-5px);
+}
+
+.logo {
+    width: 80px;
+    margin-bottom: var(--spacing-md);
+    margin-inline: auto;
+}
+
+.login-container h2 {
+    color: var(--dark-color);
+    margin-bottom: var(--spacing-lg);
+    font-weight: 600;
+}
+
+.forgot-password {
+    display: block;
+    text-align: right;
+    margin-top: var(--spacing-xs);
+    color: var(--accent-color);
+    text-decoration: none;
+    font-size: var(--font-size-small);
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.register-link {
+    margin-top: var(--spacing-md);
+    color: var(--dark-color);
+    font-size: var(--font-size-small);
+}
+
+.register-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
+}
