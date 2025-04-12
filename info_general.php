@@ -11,6 +11,30 @@ $rol = $_SESSION['rol'];
 
 include('config/conexion.php');
 
+// Consulta para contar departamentos
+$deptos_stmt = $pdo->prepare("SELECT COUNT(*) FROM departamentos");
+$deptos_stmt->execute();
+$total_departamentos = $deptos_stmt->fetchColumn();
+
+
+// Consulta para contar empleados
+$empleados_stmt = $pdo->prepare("SELECT COUNT(*) FROM empleados");
+$empleados_stmt->execute();
+$total_empleados_real = $empleados_stmt->fetchColumn();
+
+
+//Consulta para contar proyectos activos
+$activos_stmt = $pdo->prepare("
+    SELECT COUNT(*) FROM empleados_proyectos 
+    JOIN estado e ON empleados_proyectos.estado_id = e.id
+    WHERE e.estado = 'En proceso';
+");
+$activos_stmt->execute();
+$total_proyectos_activos = $activos_stmt->fetchColumn();
+
+
+
+
 // Consulta para salarios promedio por departamento
 $sql = "SELECT d.nombre AS Departamento, 
                AVG(ep.salario) AS salario_promedio 
@@ -21,6 +45,8 @@ $sql = "SELECT d.nombre AS Departamento,
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $salarios_dep = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
 
 // Consulta para empleados y proyectos por departamento
 $query = "SELECT d.nombre AS Departamento, 
@@ -36,7 +62,7 @@ $proyectos = $cmd->fetchAll(PDO::FETCH_ASSOC);
 
 // Calcular totales
 $total_empleados = array_sum(array_column($proyectos, 'cantidad_empleados'));
-$total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos'));
+$total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos')); 
 ?>
 
 <!DOCTYPE html>
@@ -47,106 +73,8 @@ $total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos'));
     <title>Panel de Control Administrativo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #1e90ff;
-            --secondary-color: #00bfff;
-            --light-color: #f0f8ff;
-            --dark-color: #007bff;
-            --white: #ffffff;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .navbar-custom {
-            background-color: var(--dark-color);
-            box-shadow: var(--shadow);
-        }
-        
-        .dashboard-container {
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .welcome-card {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--white);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow);
-        }
-        
-        .metrics-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .metric-card {
-            background: var(--white);
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-            border-left: 5px solid var(--primary-color);
-        }
-        
-        .card-action {
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .card-action:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        }
-        
-        .modal-custom .modal-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--white);
-        }
-        
-        .table-custom th {
-            background-color: var(--primary-color);
-            color: var(--white);
-        }
-        
-        .table-custom tr:nth-child(even) {
-            background-color: var(--light-color);
-        }
-        
-        .section-title {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .floating-btn {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-    </style>
+    <link rel="stylesheet" href="../pages/.css">
+    <link rel="stylesheet" href="assets/css/pages/info_general.css">
 </head>
 <body>
     <!-- menú -->
@@ -198,7 +126,7 @@ $total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos'));
                     <i class="fas fa-building fa-2x text-primary me-3"></i>
                     <div>
                         <h5 class="mb-0">Departamentos</h5>
-                        <p class="fs-4 fw-bold mb-0"><?= count($salarios_dep) ?></p>
+                        <p class="fs-4 fw-bold mb-0"><?= $total_departamentos ?></p>
                     </div>
                 </div>
             </div>
@@ -208,7 +136,7 @@ $total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos'));
                     <i class="fas fa-users fa-2x text-primary me-3"></i>
                     <div>
                         <h5 class="mb-0">Empleados</h5>
-                        <p class="fs-4 fw-bold mb-0"><?= $total_empleados ?></p>
+                        <p class="fs-4 fw-bold mb-0"><?= $total_empleados_real ?></p>
                     </div>
                 </div>
             </div>
@@ -218,7 +146,7 @@ $total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos'));
                     <i class="fas fa-project-diagram fa-2x text-primary me-3"></i>
                     <div>
                         <h5 class="mb-0">Proyectos Activos</h5>
-                        <p class="fs-4 fw-bold mb-0"><?= $total_proyectos ?></p>
+                        <p class="fs-4 fw-bold mb-0"><?= $total_proyectos_activos ?></p>
                     </div>
                 </div>
             </div>
@@ -294,12 +222,13 @@ $total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos'));
                         </table>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer no-print">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary">
+                    <button onclick="exportarModalComoPDF()" type="button" class="btn btn-primary">
                         <i class="fas fa-download me-1"></i> Exportar
                     </button>
                 </div>
+
             </div>
         </div>
     </div>
@@ -349,9 +278,9 @@ $total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos'));
                         </table>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer no-print1">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-info text-white">
+                    <button onclick="exportarModalComoPDFProyectos()" type="button" class="btn btn-info text-white">
                         <i class="fas fa-download me-1"></i> Exportar
                     </button>
                 </div>
@@ -407,6 +336,52 @@ $total_proyectos = array_sum(array_column($proyectos, 'cantidad_proyectos'));
         function redirectToOtherView() {
             window.location.href = 'admin_dashboard.php';
         }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+    function exportarModalComoPDF() {
+        const element = document.querySelector('#modalSalarios .modal-content');
+        const noPrintElements = element.querySelectorAll('.no-print');
+
+        // Oculta los botones
+        noPrintElements.forEach(el => el.style.display = 'none');
+
+        const opt = {
+            margin:       0.5,
+            filename:     'salarios_promedio.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Vuelve a mostrar los botones después de exportar
+            noPrintElements.forEach(el => el.style.display = '');
+        });
+    }
+    </script>
+    <script>
+    function exportarModalComoPDFProyectos() {
+        const element = document.querySelector('#modalProyectos .modal-content');
+        const noPrintElements = element.querySelectorAll('.no-print1');
+
+        // Oculta los botones
+        noPrintElements.forEach(el => el.style.display = 'none');
+
+        const opt = {
+            margin:       0.5,
+            filename:     'distribucion_proyectos.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Vuelve a mostrar los botones después de exportar
+            noPrintElements.forEach(el => el.style.display = '');
+        });
+    }
     </script>
 </body>
 </html>
