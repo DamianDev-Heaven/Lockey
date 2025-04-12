@@ -7,18 +7,17 @@
         exit();
     }
     
-
     $username = $_SESSION['username'];
     $rol = $_SESSION['rol'];
-    $empleado_id = $_SESSION['empleado_id']; // ID del empleado logueado
+    $empleado_id = $_SESSION['empleado_id'];
     
-    if ($rol  == 'administrador' ) {
+    if ($rol == 'administrador') {
         header('Location: admin_dashboard.php'); 
         exit();
     }
     
     // Conectar a la base de datos
-    include('conexion.php');
+    include('config/conexion.php');
     
     try {
         // Ejecutamos el procedimiento almacenado
@@ -26,21 +25,11 @@
         $stmt->bindParam(':empleado_id', $empleado_id, PDO::PARAM_INT);
         $stmt->execute();
         $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-        // Cerramos el cursor para liberar los recursos del primer resultado
         $stmt->closeCursor();
-    
-        // Verificar si se obtuvieron usuarios
-        if (!$usuarios || empty($usuarios)) {
-            echo "No se encontraron usuarios.";
-            exit();
-        }
         
     } catch (PDOException $e) {
-        echo "Error al obtener datos: " . $e->getMessage();
-        exit();
+        $error = "Error al obtener datos: " . $e->getMessage();
     }
-
 ?>
 
 <!DOCTYPE html>
@@ -51,90 +40,18 @@
     <title>Panel de Usuario</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        :root {
-                    --primary-color: #1e90ff;
-                    --secondary-color: #00bfff;
-                    --light-color: #f0f8ff;
-                    --dark-color: #007bff;
-                    --success-color: #28a745;
-                    --danger-color: #dc3545;
-                }
-                
-                body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    background-color: #f8f9fa;
-                }
-                
-                .navbar-custom {
-                    background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                }
-                
-                .table-container {
-                    background-color: white;
-                    border-radius: 10px;
-                    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-                    padding: 2rem;
-                    margin-top: 2rem;
-                }
-                
-                .table-custom {
-                    border-collapse: separate;
-                    border-spacing: 0;
-                }
-                
-                .table-custom thead th {
-                    background-color: var(--primary-color);
-                    color: white;
-                    position: sticky;
-                    top: 0;
-                    font-weight: 500;
-                }
-                
-                .table-custom tbody tr:hover {
-                    background-color: var(--light-color);
-                }
-                
-                .status-active {
-                    color: var(--success-color);
-                    font-weight: 500;
-                }
-                
-                .status-inactive {
-                    color: var(--danger-color);
-                    font-weight: 500;
-                }
-                
-                .btn-action {
-                    border-radius: 20px;
-                    padding: 0.35rem 1rem;
-                    font-size: 0.875rem;
-                    transition: all 0.3s;
-                }
-                
-                .btn-action:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                }
-                
-                .modal-header-custom {
-                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-                    color: white;
-                }
-                
-                .password-toggle {
-                    cursor: pointer;
-                    transition: all 0.3s;
-                }
-                
-                .password-toggle:hover {
-                    color: var(--primary-color);
-                }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="assets/css/pages/user_dashboard.css">
 </head>
 <body>
-    <!-- Barra de navegación mejorada -->
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+    
+    <!-- Barra de navegación -->
     <nav class="navbar navbar-expand-lg navbar-custom mb-4">
         <div class="container-fluid">
             <a class="navbar-brand text-white d-flex align-items-center" href="#">
@@ -167,55 +84,63 @@
             <i class="fas fa-user-circle me-2"></i>Mis Proyectos Asignados
         </h2>
         
-        <div class="table-responsive">
-            <table class="table table-custom table-hover align-middle">
-                <thead>
-                    <tr>
-                        <th class="text-center">#</th>
-                        <th>Nombre</th>
-                        <th class="text-end">Salario</th>
-                        <th>Proyecto</th>
-                        <th>Departamento</th>
-                        <th class="text-center">Fecha Asignación</th>
-                        <th class="text-center">Estado</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php $numero = 1; ?>
-                    <?php foreach ($usuarios as $row): ?>
-                    <tr>
-                        <td class="text-center"><?= $numero++ ?></td>
-                        <td><?= htmlspecialchars($row['nombre']) ?></td>
-                        <td class="text-end fw-medium">$<?= number_format($row['salario'], 2) ?></td>
-                        <td><?= htmlspecialchars($row['proyecto']) ?></td>
-                        <td><?= htmlspecialchars($row['departamento']) ?></td>
-                        <td class="text-center"><?= date('d/m/Y', strtotime($row['fecha_asignada'])) ?></td>
-                        <td class="text-center <?= $row['Estado'] === 'Activo' ? 'status-active' : 'status-inactive' ?>">
-                            <?= htmlspecialchars($row['Estado']) ?>
-                        </td>
-                        <td class="text-center">
-                            <div class="d-flex justify-content-center gap-2">
-                                <button class="btn btn-success btn-action finalizar-btn"
-                                        data-id-proyecto="<?= $row['proyecto_id'] ?>"
-                                        data-id-empleado="<?= $row['id'] ?>">
-                                    <i class="fas fa-check-circle me-1"></i>Finalizar
-                                </button>
-                                <button class="btn btn-danger btn-action eliminar-btn"
-                                        data-id-proyecto="<?= $row['proyecto_id'] ?>"
-                                        data-id-empleado="<?= $row['id'] ?>">
-                                    <i class="fas fa-trash-alt me-1"></i>Eliminar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+        <?php if (isset($error)): ?>
+            <div class="alert alert-danger"><?= $error ?></div>
+        <?php elseif (empty($usuarios)): ?>
+            <div class="alert alert-info">No tienes proyectos asignados actualmente.</div>
+        <?php else: ?>
+            <div class="table-responsive">
+                <table class="table table-custom table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th>Nombre</th>
+                            <th class="text-end">Salario</th>
+                            <th>Proyecto</th>
+                            <th>Departamento</th>
+                            <th class="text-center">Fecha Asignación</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $numero = 1; ?>
+                        <?php foreach ($usuarios as $row): ?>
+                        <tr>
+                            <td class="text-center"><?= $numero++ ?></td>
+                            <td><?= htmlspecialchars($row['nombre']) ?></td>
+                            <td class="text-end fw-medium">$<?= number_format($row['salario'], 2) ?></td>
+                            <td><?= htmlspecialchars($row['proyecto']) ?></td>
+                            <td><?= htmlspecialchars($row['departamento']) ?></td>
+                            <td class="text-center"><?= date('d/m/Y', strtotime($row['fecha_asignada'])) ?></td>
+                            <td class="text-center <?= $row['Estado'] === 'Activo' ? 'status-active' : 'status-inactive' ?>">
+                                <?= htmlspecialchars($row['Estado']) ?>
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button class="btn btn-success btn-action finalizar-btn"
+                                            data-id-proyecto="<?= $row['proyecto_id'] ?>"
+                                            data-id-empleado="<?= $row['id'] ?>"
+                                            data-proyecto="<?= htmlspecialchars($row['proyecto']) ?>">
+                                        <i class="fas fa-check-circle me-1"></i>Finalizar
+                                    </button>
+                                    <button class="btn btn-danger btn-action eliminar-btn"
+                                            data-id-proyecto="<?= $row['proyecto_id'] ?>"
+                                            data-id-empleado="<?= $row['id'] ?>"
+                                            data-proyecto="<?= htmlspecialchars($row['proyecto']) ?>">
+                                        <i class="fas fa-trash-alt me-1"></i>Eliminar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
     </div>
 
-    <!-- Modal Cambiar Contraseña (Mejorado) -->
+    <!-- Modal Cambiar Contraseña -->
     <div class="modal fade" id="cambiarcontra" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0">
@@ -226,7 +151,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <form action="contrasena.php" method="POST">
+                    <form id="passwordForm" action="contrasena.php" method="POST">
                         <div class="mb-3">
                             <label class="form-label fw-medium">Contraseña Actual</label>
                             <div class="input-group">
@@ -271,6 +196,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
         $(document).ready(function() {
             // Toggle para mostrar/ocultar contraseña
@@ -286,48 +212,121 @@
                     icon.removeClass('fa-eye-slash').addClass('fa-eye');
                 }
             });
+            $("td.status-inactive").each(function() {
+        if ($(this).text().trim() === "Finalizado") {
+            $(this).closest('tr').find('.finalizar-btn')
+                .prop('disabled', true)
+                .addClass('btn-secondary')
+                .removeClass('btn-success')
+                .html('<i class="fas fa-check-circle me-1"></i>Completado');
+        }
+    });
             
-            // Finalizar Proyecto (misma funcionalidad)
+            // Función para mostrar notificaciones
+            function showNotification(message, type) {
+                const bgColor = type === 'success' ? '#28a745' : 
+                               type === 'error' ? '#dc3545' : '#17a2b8';
+                
+                Toastify({
+                    text: message,
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    style: {
+                        background: bgColor,
+                    }
+                }).showToast();
+            }
+            
+            // Mostrar/ocultar overlay de carga
+            function toggleLoading(show) {
+                $('#loadingOverlay').css('visibility', show ? 'visible' : 'hidden');
+            }
+            
             $(".finalizar-btn").click(function() {
-                let idProyecto = $(this).data('id-proyecto');
-                let idEmpleado = $(this).data('id-empleado'); 
-        
-                if (confirm("¿Estás seguro de finalizar este proyecto?")) {
-                    $.post("cambiar_estado.php", 
-                    { 
-                        id_proyecto: idProyecto, 
-                        id_empleado: idEmpleado, 
-                        accion: "finalizar" 
-                    }, 
-                    function(response) {
-                        if (response.trim() === "success") {
-                            alert("Proceso finalizado correctamente");
-                            location.reload();
-                        } else {
-                            alert("Error al finalizar el proyecto.");
-                        }
-                    });
+        let button = $(this);
+        let idProyecto = button.data('id-proyecto');
+        let idEmpleado = button.data('id-empleado');
+        let nombreProyecto = button.data('proyecto');
+
+        if (confirm(`¿Estás seguro de finalizar el proyecto "${nombreProyecto}"?`)) {
+            toggleLoading(true);
+            
+            $.ajax({
+                url: "cambiar_estado.php",
+                type: "POST",
+                data: { 
+                    id_proyecto: idProyecto, 
+                    id_empleado: idEmpleado, 
+                    accion: "finalizar" 
+                },
+                success: function(response) {
+                    toggleLoading(false);
+                    
+                    if (response === "success") {
+                        // Deshabilitar el botón después de finalizar correctamente
+                        button.prop('disabled', true)
+                              .addClass('btn-secondary')
+                              .removeClass('btn-success')
+                              .html('<i class="fas fa-check-circle me-1"></i>Completado');
+                        
+                        // También actualiza el estado en la tabla
+                        button.closest('tr').find('td:nth-child(7)')
+                              .text('Finalizado')
+                              .removeClass('status-active')
+                              .addClass('status-inactive');
+                              
+                        showNotification("Proyecto finalizado correctamente", "success");
+                    } else if (response === "already_finished") {
+                        button.prop('disabled', true)
+                              .addClass('btn-secondary')
+                              .removeClass('btn-success')
+                              .html('<i class="fas fa-check-circle me-1"></i>Completado');
+                              
+                        showNotification("Este proyecto ya está marcado como finalizado", "info");
+                    } else {
+                        showNotification("Error al finalizar el proyecto: " + response, "error");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    toggleLoading(false);
+                    showNotification("Error de conexión: " + error, "error");
                 }
             });
+        }
+    });
             
-            // Eliminar Proyecto (misma funcionalidad)
+            // Eliminar Proyecto - MEJORADO
             $(".eliminar-btn").click(function() {
                 let idProyecto = $(this).data('id-proyecto');
                 let idEmpleado = $(this).data('id-empleado');
+                let nombreProyecto = $(this).data('proyecto');
                 
-                if (confirm("¿Estás seguro de eliminar este proyecto?")) {
-                    $.post("cambiar_estado.php", 
-                    { 
-                        id_proyecto: idProyecto, 
-                        id_empleado: idEmpleado, 
-                        accion: "eliminar" 
-                    }, 
-                    function(response) { 
-                        if (response.trim() === "success") {
-                            alert("Proceso eliminado correctamente");
-                            location.reload();
-                        } else {
-                            alert("Error al eliminar el proyecto.");
+                if (confirm(`¿Estás seguro de eliminar el proyecto "${nombreProyecto}"?`)) {
+                    toggleLoading(true);
+                    
+                    $.ajax({
+                        url: "cambiar_estado.php",
+                        type: "POST",
+                        data: { 
+                            id_proyecto: idProyecto, 
+                            id_empleado: idEmpleado, 
+                            accion: "eliminar" 
+                        },
+                        success: function(response) {
+                            toggleLoading(false);
+                            
+                            if (response === "success") {
+                                showNotification("Proyecto eliminado correctamente", "success");
+                                setTimeout(() => location.reload(), 1000);
+                            } else {
+                                showNotification("Error al eliminar el proyecto: " + response, "error");
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            toggleLoading(false);
+                            showNotification("Error de conexión: " + error, "error");
                         }
                     });
                 }
