@@ -229,33 +229,75 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
             </div>
         </div>
     
-<div class="mt-4">
+        <div class="mt-4">
     <div class="card shadow-sm border-0">
         <div class="card-body">
             <h5 class="card-title mb-3">
                 <i class="bi bi-tools text-success me-2"></i>Herramientas de Gestión
             </h5>
             
-            <div class="d-flex flex-wrap gap-3">
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#adduser">
-                    <i class="bi bi-person-plus me-1"></i>Agregar Usuario
-                </button>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <!-- Menú desplegable para Usuarios -->
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="usuariosDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-people me-1"></i>Usuarios
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
+                        <li>
+                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#adduser">
+                                <i class="bi bi-person-plus me-1"></i>Agregar Usuario
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#assignProjectModal">
+                                <i class="bi bi-kanban me-1"></i>Asignar Proyecto
+                            </button>
+                        </li>
+                    </ul>
+                </div>
                 
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignProjectModal">
-                    <i class="bi bi-kanban me-1"></i>Asignar Proyecto
-                </button>
+                <!-- Menú desplegable para Proyectos -->
+                <div class="dropdown">
+                    <button class="btn btn-info text-white dropdown-toggle" type="button" id="proyectosDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-briefcase me-1"></i>Proyectos
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="proyectosDropdown">
+                        <li>
+                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#addproyect">
+                                <i class="bi bi-plus-circle me-1"></i>Agregar Proyecto
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteProjectModal">
+                                <i class="bi bi-trash me-1"></i>Eliminar Proyecto
+                            </button>
+                        </li>
+                    </ul>
+                </div>
                 
-                <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#addproyect">
-                    <i class="bi bi-plus-circle me-1"></i>Agregar Proyecto
-                </button>
-                
-                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProjectModal">
-                    <i class="bi bi-trash me-1"></i>Eliminar Proyecto
-                </button>
-                
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDepartment">
-                    <i class="bi bi-building-add me-1"></i>Agregar Departamento
-                </button>
+                <!-- Menú desplegable para Departamentos -->
+                <div class="dropdown">
+                    <button class="btn btn-success dropdown-toggle" type="button" id="departamentosDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-building me-1"></i>Departamentos
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="departamentosDropdown">
+                        <li>
+                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#addDepartment">
+                                <i class="bi bi-building-add me-1"></i>Agregar Departamento
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editDepartmentModal">
+                                <i class="bi bi-pencil-square me-1"></i>Editar Departamento
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal">
+                                <i class="bi bi-trash me-1"></i>Eliminar Departamento
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
