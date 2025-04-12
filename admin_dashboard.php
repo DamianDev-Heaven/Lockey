@@ -84,11 +84,6 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
                 <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#cambiarcontra">
                     <i class="fas fa-key me-1"></i> Cambiar Contraseña
                 </button>
-                <form action="logout.php" method="post">
-                    <button type="submit" class="btn btn-outline-light btn-sm ms-2" name="cerrar_sesion">
-                        <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
-                    </button>
-
                     <form action="logout.php" method="post" onsubmit="return confirmarCerrarSesion();">
                     <button type="submit" class="btn btn-outline-light btn-sm ms-2" name="cerrar_sesion">
                         <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
