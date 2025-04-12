@@ -1,5 +1,5 @@
 <?php
-include('conexion.php'); // Conexión a la base de datos
+include('config\conexion.php'); // Conexión a la base de datos
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['proyecto_id'])) {
     $proyecto_id = $_POST['proyecto_id'];
