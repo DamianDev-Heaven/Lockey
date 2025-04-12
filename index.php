@@ -1,17 +1,39 @@
 <?php
 header('Content-Type: text/html; charset=UTF-8');
 ?>
-<?php
-header('Content-Type: text/html; charset=UTF-8');
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/pages/login.css">
+    <style>
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            z-index: 10;
+        }
+        
+        .toggle-password:hover {
+            color: #4361ee;
+        }
+        
+        /* Ajustar el padding del campo de contraseña para evitar que el texto se solape con el icono */
+        #password {
+            padding-right: 40px;
+        }
+    </style>
 </head>
 <body>
     <div class="login-container">
@@ -29,7 +51,10 @@ header('Content-Type: text/html; charset=UTF-8');
             
             <div class="form-group">
                 <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Ingresa tu contraseña" required>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Ingresa tu contraseña" required>
+                    <i class="toggle-password fas fa-eye" title="Mostrar contraseña"></i>
+                </div>
                 
                 <a href="recuperar_cuenta.php" class="forgot-password">¿Olvidaste tu contraseña?</a>
             </div>
@@ -41,5 +66,27 @@ header('Content-Type: text/html; charset=UTF-8');
             ¿No tienes cuenta? <a href="registro.php">Crea una</a>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.querySelector('.toggle-password');
+            const passwordInput = document.querySelector('#password');
+            
+            togglePassword.addEventListener('click', function() {
+                // Cambiar el tipo de input entre password y text
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Cambiar el icono entre ojo y ojo tachado
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+                
+                // Cambiar el título según el estado
+                this.setAttribute('title', 
+                    type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña'
+                );
+            });
+        });
+    </script>
 </body>
 </html>

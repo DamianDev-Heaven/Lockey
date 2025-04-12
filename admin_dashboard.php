@@ -1,5 +1,4 @@
 <?php
-// filepath: c:\xampp\htdocs\Prototipo\admin_dashboard.php
 session_start();
 
 // Guard clauses para validación de sesión
@@ -19,6 +18,9 @@ if ($rol === 'usuario') {
 
 // Conectar a la base de datos
 include('config/conexion.php');
+
+// Obtener fecha actual para validaciones
+$fechaActual = date('Y-m-d\TH:i');
 
 // Consultas para obtener datos necesarios
 function executeQuery($pdo, $sql) {
@@ -46,6 +48,25 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="assets/css/pages/dashboard.css">
+    <style>
+        /* Estilos para campos inválidos */
+        .is-invalid {
+            border-color: #dc3545 !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") !important;
+            background-repeat: no-repeat !important;
+            background-position: right calc(0.375em + 0.1875rem) center !important;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
+        }
+        
+        /* Estilos para campos válidos */
+        .is-valid {
+            border-color: #198754 !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") !important;
+            background-repeat: no-repeat !important;
+            background-position: right calc(0.375em + 0.1875rem) center !important;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -276,8 +297,8 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
                                 </div>
                                 <div class="mb-3">
                                     <label>Salario:</label>
-                                    <input type="number" name="salario" class="form-control" min="0" step="0.01" oninput="validarSalario(this)" required>
-                                    <div class="invalid-feedback">El salario no puede ser negativo</div>
+                                    <input type="number" name="salario" class="form-control" min="0.01" step="0.01" oninput="validarSalario(this)" required>
+                                    <div class="invalid-feedback">El salario no puede ser negativo o igual a '-0'</div>
                                 </div>
                                 <div class="mb-3">
                                     <label>Proyecto:</label>
@@ -429,7 +450,7 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
                         <!-- Salario -->
                         <div class="mb-3">
                             <label>Salario:</label>
-                            <input type="number" name="salario" id="editSalario" class="form-control" min="0" step="0.01" oninput="validarSalario(this)" required>
+                            <input type="number" name="salario" id="editSalario" class="form-control" min="0.01" step="0.01" oninput="validarSalario(this)" required>
                             <div class="invalid-feedback">El salario no puede ser negativo o igual a '-0'</div>
                         </div>
 
@@ -441,6 +462,7 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
                 </div>
             </div>
         </div>
+        
     </div>
 
 
@@ -509,12 +531,13 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
                                        id="salario" 
                                        name="salario" 
                                        step="0.01" 
-                                       min="1" 
+                                       min="0.01" 
                                        required
-                                       placeholder="0.00">
-                                <div class="invalid-feedback">
-                                    Por favor ingrese un salario válido.
-                                </div>
+                                       placeholder="0.00"
+                                       oninput="validarSalario(this)">
+                            </div>
+                            <div class="invalid-feedback">
+                                El salario debe ser un valor positivo mayor que cero.
                             </div>
                         </div>
                         
@@ -526,10 +549,12 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
                             <input type="datetime-local" 
                                    class="form-control py-2" 
                                    id="fecha_asignacion" 
-                                   name="fecha_asignacion" 
+                                   name="fecha_asignacion"
+                                   min="<?= $fechaActual ?>"
+                                   oninput="validarFecha(this)"
                                    required>
                             <div class="invalid-feedback">
-                                Por favor seleccione una fecha de asignación.
+                                La fecha debe ser igual o posterior a hoy (<?= date('d/m/Y H:i') ?>).
                             </div>
                         </div>
                         
@@ -665,14 +690,41 @@ const validateForm = (form, invalidHandler = null) => {
     return isValid;
 };
 
-// Validar salario
+// Validar salario - Mejorado para prevenir valores negativos y '-0'
 function validarSalario(input) {
-    if (input.value < 0 || input.value === '-0') {
+    const valor = parseFloat(input.value);
+    
+    if (input.value === '-0' || valor <= 0 || isNaN(valor)) {
         input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
         input.value = '';
-        return;
+        input.nextElementSibling.textContent = 'El salario debe ser un valor positivo';
+        return false;
+    } else {
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        return true;
     }
-    input.classList.remove('is-invalid');
+}
+
+// Validar que la fecha no sea pasada
+function validarFecha(input) {
+    const fechaSeleccionada = new Date(input.value);
+    const ahora = new Date();
+    
+    // Resetear los segundos y milisegundos para una comparación más justa
+    ahora.setSeconds(0);
+    ahora.setMilliseconds(0);
+    
+    if (fechaSeleccionada < ahora) {
+        input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
+        return false;
+    } else {
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        return true;
+    }
 }
 
 // Mostrar/ocultar contraseña
@@ -690,9 +742,58 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Validación de campos de fecha en tiempo real
+    document.querySelectorAll('input[type="date"], input[type="datetime-local"]').forEach(input => {
+        // Establecer la fecha mínima como hoy
+        const hoy = new Date().toISOString().split('T')[0];
+        if (!input.getAttribute('min')) {
+            input.setAttribute('min', hoy);
+        }
+        
+        // Validar al cambiar
+        input.addEventListener('change', function() {
+            validarFecha(this);
+        });
+        
+        // Validar al perder el foco
+        input.addEventListener('blur', function() {
+            validarFecha(this);
+        });
+    });
+    
+    // Validación de campos de salario en tiempo real
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        // Validar al cambiar
+        input.addEventListener('input', function() {
+            validarSalario(this);
+        });
+        
+        // Validar al perder el foco
+        input.addEventListener('blur', function() {
+            validarSalario(this);
+        });
+    });
+    
     // Modal de edición
     document.querySelectorAll("[data-bs-target='#editModal']").forEach(button => {
         button.addEventListener("click", () => configurarModalEdicion(button));
+    });
+    
+    // Configurar fecha mínima cuando se abre el modal de asignar proyecto
+    document.getElementById('assignProjectModal').addEventListener('show.bs.modal', function () {
+        const fechaInput = document.getElementById('fecha_asignacion');
+        if (fechaInput) {
+            // Establecer la fecha mínima como el momento actual
+            const ahora = new Date();
+            const año = ahora.getFullYear();
+            const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+            const dia = String(ahora.getDate()).padStart(2, '0');
+            const hora = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            
+            const fechaMinima = `${año}-${mes}-${dia}T${hora}:${minutos}`;
+            fechaInput.min = fechaMinima;
+        }
     });
     
     // Modal de eliminación
@@ -713,9 +814,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (editForm) {
         editForm.addEventListener('submit', function(e) {
             const salarioInput = document.getElementById('editSalario');
-            if (salarioInput.value < 0 || salarioInput.value === '-0') {
+            if (!validarSalario(salarioInput)) {
                 e.preventDefault();
-                salarioInput.classList.add('is-invalid');
                 salarioInput.focus();
             }
         });
@@ -750,10 +850,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Validaciones específicas
             const salarioInput = this.querySelector('[name="salario"]');
             if (salarioInput && salarioInput.value) {
-                if (salarioInput.value < 0 || salarioInput.value === '-0') {
+                if (!validarSalario(salarioInput)) {
                     isValid = false;
-                    salarioInput.classList.add('is-invalid');
-                    salarioInput.nextElementSibling.textContent = 'El salario no puede ser negativo o igual a "-0".';
                 }
             }
             
@@ -797,6 +895,53 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Validación del formulario de asignación de proyectos
+    const assignProjectForm = document.getElementById('assignProjectForm');
+    if (assignProjectForm) {
+        assignProjectForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let isValid = true;
+            
+            // Validar campos requeridos
+            const requiredInputs = this.querySelectorAll('[required]');
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+            
+            // Validar salario
+            const salarioInput = document.getElementById('salario');
+            if (salarioInput) {
+                if (!validarSalario(salarioInput)) {
+                    isValid = false;
+                }
+            }
+            
+            // Validar fecha
+            const fechaInput = document.getElementById('fecha_asignacion');
+            if (fechaInput) {
+                if (!validarFecha(fechaInput)) {
+                    isValid = false;
+                }
+            }
+            
+            if (isValid) {
+                assignProjectForm.submit();
+            } else {
+                // Hacer scroll al primer campo con error
+                const firstInvalidField = document.querySelector('.is-invalid');
+                if (firstInvalidField) {
+                    firstInvalidField.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    firstInvalidField.focus();
+                }
+            }
+        });
+    }
+    
     // Validación del formulario de cambio de contraseña
     const passwordForm = document.getElementById('changePasswordForm');
     if (passwordForm) {
@@ -816,7 +961,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Resto de validaciones para los otros formularios
-    ['projectForm', 'deleteProjectForm', 'assignProjectForm'].forEach(formId => {
+    ['projectForm', 'deleteProjectForm'].forEach(formId => {
         const form = document.getElementById(formId);
         if (form) {
             form.addEventListener('submit', function(e) {
@@ -866,8 +1011,9 @@ function resetForm(formElement) {
         formElement.reset();
         
         // Eliminar todas las clases de validación
-        formElement.querySelectorAll('.is-invalid').forEach(el => {
+        formElement.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
             el.classList.remove('is-invalid');
+            el.classList.remove('is-valid');
         });
         
         // Eliminar mensajes de alerta
