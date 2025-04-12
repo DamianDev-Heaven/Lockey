@@ -199,34 +199,37 @@ $empleado = executeQuery($pdo, "CALL vista_administrador()");
             </div>
         </div>
     
-        <!-- Sección de botones de gestión -->
-        <div class="mt-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">
-                        <i class="bi bi-tools text-success me-2"></i>Herramientas de Gestión
-                    </h5>
-                    
-                    <div class="d-flex flex-wrap gap-3">
-                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#adduser">
-                            <i class="bi bi-person-plus me-1"></i>Agregar Usuario
-                        </button>
-                        
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignProjectModal">
-                            <i class="bi bi-kanban me-1"></i>Asignar Proyecto
-                        </button>
-                        
-                        <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#addproyect">
-                            <i class="bi bi-plus-circle me-1"></i>Agregar Proyecto
-                        </button>
-                        
-                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProjectModal">
-                            <i class="bi bi-trash me-1"></i>Eliminar Proyecto
-                        </button>
-                    </div>
-                </div>
+<div class="mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="card-title mb-3">
+                <i class="bi bi-tools text-success me-2"></i>Herramientas de Gestión
+            </h5>
+            
+            <div class="d-flex flex-wrap gap-3">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#adduser">
+                    <i class="bi bi-person-plus me-1"></i>Agregar Usuario
+                </button>
+                
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignProjectModal">
+                    <i class="bi bi-kanban me-1"></i>Asignar Proyecto
+                </button>
+                
+                <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#addproyect">
+                    <i class="bi bi-plus-circle me-1"></i>Agregar Proyecto
+                </button>
+                
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProjectModal">
+                    <i class="bi bi-trash me-1"></i>Eliminar Proyecto
+                </button>
+                
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDepartment">
+                    <i class="bi bi-building-add me-1"></i>Agregar Departamento
+                </button>
             </div>
         </div>
+    </div>
+</div>
     </main>
 
     <!-- MODAL ELIMINAR -->
