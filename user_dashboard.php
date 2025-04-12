@@ -42,6 +42,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="assets/css/pages/user_dashboard.css">
+    <style>
+        /* Estilos adicionales para botones deshabilitados */
+        .btn-action:disabled {
+            cursor: not-allowed !important;
+            opacity: 0.7;
+        }
+
+        .btn-action:disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Asegurar que los proyectos finalizados están claramente marcados */
+        .status-inactive {
+            font-weight: bold !important;
+            color: #dc3545 !important; 
+        }
+    </style>
 </head>
 <body>
     <!-- Loading overlay -->
@@ -106,6 +124,10 @@
                     <tbody>
                         <?php $numero = 1; ?>
                         <?php foreach ($usuarios as $row): ?>
+                        <?php 
+                            // Determinar si el proyecto está finalizado
+                            $isFinished = (strtolower($row['Estado']) === 'finalizado');
+                        ?>
                         <tr>
                             <td class="text-center"><?= $numero++ ?></td>
                             <td><?= htmlspecialchars($row['nombre']) ?></td>
@@ -113,16 +135,18 @@
                             <td><?= htmlspecialchars($row['proyecto']) ?></td>
                             <td><?= htmlspecialchars($row['departamento']) ?></td>
                             <td class="text-center"><?= date('d/m/Y', strtotime($row['fecha_asignada'])) ?></td>
-                            <td class="text-center <?= $row['Estado'] === 'Activo' ? 'status-active' : 'status-inactive' ?>">
+                            <td class="text-center <?= $isFinished ? 'status-inactive' : 'status-active' ?>">
                                 <?= htmlspecialchars($row['Estado']) ?>
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
-                                    <button class="btn btn-success btn-action finalizar-btn"
+                                    <button class="btn <?= $isFinished ? 'btn-secondary' : 'btn-success' ?> btn-action finalizar-btn"
+                                            <?= $isFinished ? 'disabled' : '' ?>
                                             data-id-proyecto="<?= $row['proyecto_id'] ?>"
                                             data-id-empleado="<?= $row['id'] ?>"
-                                            data-proyecto="<?= htmlspecialchars($row['proyecto']) ?>">
-                                        <i class="fas fa-check-circle me-1"></i>Finalizar
+                                            data-proyecto="<?= htmlspecialchars($row['proyecto']) ?>"
+                                            data-estado="<?= htmlspecialchars($row['Estado']) ?>">
+                                        <i class="fas fa-check-circle me-1"></i><?= $isFinished ? 'Completado' : 'Finalizar' ?>
                                     </button>
                                     <button class="btn btn-danger btn-action eliminar-btn"
                                             data-id-proyecto="<?= $row['proyecto_id'] ?>"
@@ -212,15 +236,34 @@
                     icon.removeClass('fa-eye-slash').addClass('fa-eye');
                 }
             });
-            $("td.status-inactive").each(function() {
-        if ($(this).text().trim() === "Finalizado") {
-            $(this).closest('tr').find('.finalizar-btn')
-                .prop('disabled', true)
-                .addClass('btn-secondary')
-                .removeClass('btn-success')
-                .html('<i class="fas fa-check-circle me-1"></i>Completado');
-        }
-    });
+            
+            // Función mejorada para deshabilitar botones de proyectos finalizados
+            function disableFinishedProjectButtons() {
+                // Comprobamos todas las celdas de estado
+                $("td.status-inactive").each(function() {
+                    // Caso insensible para "finalizado"
+                    if ($(this).text().trim().toLowerCase() === "finalizado") {
+                        $(this).closest('tr').find('.finalizar-btn')
+                            .prop('disabled', true)
+                            .addClass('btn-secondary')
+                            .removeClass('btn-success')
+                            .html('<i class="fas fa-check-circle me-1"></i>Completado');
+                    }
+                });
+                
+                // También comprobar desde el atributo data-estado
+                $('.finalizar-btn').each(function() {
+                    if ($(this).data('estado') && $(this).data('estado').toLowerCase() === 'finalizado') {
+                        $(this).prop('disabled', true)
+                            .addClass('btn-secondary')
+                            .removeClass('btn-success')
+                            .html('<i class="fas fa-check-circle me-1"></i>Completado');
+                    }
+                });
+            }
+            
+            // Ejecutar al cargar la página
+            disableFinishedProjectButtons();
             
             // Función para mostrar notificaciones
             function showNotification(message, type) {
@@ -244,60 +287,64 @@
                 $('#loadingOverlay').css('visibility', show ? 'visible' : 'hidden');
             }
             
+            // Finalizar proyecto
             $(".finalizar-btn").click(function() {
-        let button = $(this);
-        let idProyecto = button.data('id-proyecto');
-        let idEmpleado = button.data('id-empleado');
-        let nombreProyecto = button.data('proyecto');
+                let button = $(this);
+                let idProyecto = button.data('id-proyecto');
+                let idEmpleado = button.data('id-empleado');
+                let nombreProyecto = button.data('proyecto');
 
-        if (confirm(`¿Estás seguro de finalizar el proyecto "${nombreProyecto}"?`)) {
-            toggleLoading(true);
-            
-            $.ajax({
-                url: "cambiar_estado.php",
-                type: "POST",
-                data: { 
-                    id_proyecto: idProyecto, 
-                    id_empleado: idEmpleado, 
-                    accion: "finalizar" 
-                },
-                success: function(response) {
-                    toggleLoading(false);
+                if (confirm(`¿Estás seguro de finalizar el proyecto "${nombreProyecto}"?`)) {
+                    toggleLoading(true);
                     
-                    if (response === "success") {
-                        // Deshabilitar el botón después de finalizar correctamente
-                        button.prop('disabled', true)
-                              .addClass('btn-secondary')
-                              .removeClass('btn-success')
-                              .html('<i class="fas fa-check-circle me-1"></i>Completado');
-                        
-                        // También actualiza el estado en la tabla
-                        button.closest('tr').find('td:nth-child(7)')
-                              .text('Finalizado')
-                              .removeClass('status-active')
-                              .addClass('status-inactive');
-                              
-                        showNotification("Proyecto finalizado correctamente", "success");
-                    } else if (response === "already_finished") {
-                        button.prop('disabled', true)
-                              .addClass('btn-secondary')
-                              .removeClass('btn-success')
-                              .html('<i class="fas fa-check-circle me-1"></i>Completado');
-                              
-                        showNotification("Este proyecto ya está marcado como finalizado", "info");
-                    } else {
-                        showNotification("Error al finalizar el proyecto: " + response, "error");
-                    }
-                },
-                error: function(xhr, status, error) {
-                    toggleLoading(false);
-                    showNotification("Error de conexión: " + error, "error");
+                    $.ajax({
+                        url: "cambiar_estado.php",
+                        type: "POST",
+                        data: { 
+                            id_proyecto: idProyecto, 
+                            id_empleado: idEmpleado, 
+                            accion: "finalizar" 
+                        },
+                        success: function(response) {
+                            toggleLoading(false);
+                            
+                            if (response === "success") {
+                                // Deshabilitar el botón después de finalizar correctamente
+                                button.prop('disabled', true)
+                                      .addClass('btn-secondary')
+                                      .removeClass('btn-success')
+                                      .html('<i class="fas fa-check-circle me-1"></i>Completado');
+                                
+                                // También actualiza el estado en la tabla
+                                button.closest('tr').find('td:nth-child(7)')
+                                      .text('Finalizado')
+                                      .removeClass('status-active')
+                                      .addClass('status-inactive');
+                                      
+                                // Actualizar el atributo data-estado
+                                button.data('estado', 'Finalizado');
+                                      
+                                showNotification("Proyecto finalizado correctamente", "success");
+                            } else if (response === "already_finished") {
+                                button.prop('disabled', true)
+                                      .addClass('btn-secondary')
+                                      .removeClass('btn-success')
+                                      .html('<i class="fas fa-check-circle me-1"></i>Completado');
+                                      
+                                showNotification("Este proyecto ya está marcado como finalizado", "info");
+                            } else {
+                                showNotification("Error al finalizar el proyecto: " + response, "error");
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            toggleLoading(false);
+                            showNotification("Error de conexión: " + error, "error");
+                        }
+                    });
                 }
             });
-        }
-    });
             
-            // Eliminar Proyecto - MEJORADO
+            // Eliminar Proyecto
             $(".eliminar-btn").click(function() {
                 let idProyecto = $(this).data('id-proyecto');
                 let idEmpleado = $(this).data('id-empleado');
