@@ -9,7 +9,7 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
 
-include('conexion.php');
+include('config/conexion.php');
 
 // Consulta para salarios promedio por departamento
 $sql = "SELECT d.nombre AS Departamento, 

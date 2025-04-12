@@ -25,7 +25,7 @@ if ($rol  === 'usuario' ) {
     
 
 // Conectar a la base de datos
-include('conexion.php');
+include('config\conexion.php');
 
 //llena un select con informacion de la base de datos para proyectos
 $sqlProyectos = "SELECT id, nombre FROM proyectos";
@@ -433,7 +433,7 @@ $empleado = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <select name="proyecto_id" id="proyectoSelect" class="form-control" required>
                             <option value="">Seleccione un proyecto</option>
                             <?php
-                            include('conexion.php');
+                            include('config/conexion.php');
                             $stmt = $pdo->query("SELECT id, nombre FROM proyectos");
                             while ($proyecto = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                 echo "<option value='{$proyecto['id']}'>{$proyecto['nombre']}</option>";
@@ -470,7 +470,7 @@ $empleado = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <select name="proyecto_id" id="editProyecto" class="form-control" required>
                         <option value="">Seleccione un Proyecto</option>
                         <?php
-                        include('conexion.php');
+                        include('config/conexion.php');
                         $stmt = $pdo->query("SELECT id, nombre FROM proyectos");
                         while ($proyecto = $stmt->fetch(PDO::FETCH_ASSOC)) {
                             echo "<option value='{$proyecto['id']}'>{$proyecto['nombre']}</option>";
